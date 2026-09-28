@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../constants/app_durations.dart';
 
@@ -56,7 +57,7 @@ class SoundService {
     // Get audio duration when it's available
     _playerA!.onDurationChanged.listen((duration) {
       _audioDurationMs = duration.inMilliseconds;
-      print('[SoundService] Audio duration: ${_audioDurationMs}ms');
+      debugPrint('[SoundService] Audio duration: ${_audioDurationMs}ms');
     });
     
     // Also listen for completion on both players as backup
@@ -65,7 +66,7 @@ class SoundService {
   }
   
   void _onPlayerComplete(bool isPlayerA) {
-    print('[SoundService] Player ${isPlayerA ? "A" : "B"} completed');
+    debugPrint('[SoundService] Player ${isPlayerA ? "A" : "B"} completed');
     // If this player completed and we're still playing, restart it for next cycle
     if (_isPlaying && !_isCrossfading) {
       // Trigger crossfade immediately if somehow we missed the timing
@@ -124,11 +125,11 @@ class SoundService {
         
         // Trigger crossfade when approaching end
         if (remainingMs <= _crossfadeLeadTimeMs && remainingMs > 0) {
-          print('[SoundService] Triggering crossfade, remaining: ${remainingMs}ms');
+          debugPrint('[SoundService] Triggering crossfade, remaining: ${remainingMs}ms');
           _performCrossfade();
         }
       } catch (e) {
-        print('[SoundService] Position check error: $e');
+        debugPrint('[SoundService] Position check error: $e');
       }
     });
   }
@@ -138,7 +139,7 @@ class SoundService {
     if (_isCrossfading || !_isPlaying) return;
     _isCrossfading = true;
     
-    print('[SoundService] Starting crossfade...');
+    debugPrint('[SoundService] Starting crossfade...');
     
     final fadeOutPlayer = _activePlayer;
     final fadeInPlayer = _inactivePlayer;
@@ -185,7 +186,7 @@ class SoundService {
         fadeOutPlayer?.seek(Duration.zero); // Reset for next crossfade
         _isCrossfading = false;
         _currentVolume = targetVolume;
-        print('[SoundService] Crossfade complete');
+        debugPrint('[SoundService] Crossfade complete');
       }
     });
   }

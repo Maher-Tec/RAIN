@@ -1,15 +1,12 @@
 import 'dart:ui' as ui;
 
 /// Offscreen renderer for Buffer A
-/// 
+///
 /// Renders the Buffer A shader into an ui.Image at reduced resolution
 /// for massive performance gains. The output is then used as a sampler
 /// input for the composite shader.
 class OffscreenBufferA {
-  OffscreenBufferA({
-    required this.program,
-    required this.scale,
-  });
+  OffscreenBufferA({required this.program, required this.scale});
 
   final ui.FragmentProgram program;
   final double scale;
@@ -21,18 +18,22 @@ class OffscreenBufferA {
     required ui.Size fullSize,
     required double time,
     required double intensity,
+    ui.Offset? touchPosition,
   }) async {
-    final w = (fullSize.width * scale).round().clamp(2, 4096);
-    final h = (fullSize.height * scale).round().clamp(2, 4096);
+    final w = (fullSize.width * scale).round().clamp(2, 4096).toInt();
+    final h = (fullSize.height * scale).round().clamp(2, 4096).toInt();
 
     final recorder = ui.PictureRecorder();
     final canvas = ui.Canvas(recorder);
 
     final shader = program.fragmentShader()
-      ..setFloat(0, w.toDouble())   // uResolution.x
-      ..setFloat(1, h.toDouble())   // uResolution.y
-      ..setFloat(2, time)           // uTime
-      ..setFloat(3, intensity);     // uIntensity
+      ..setFloat(0, w.toDouble()) // uResolution.x
+      ..setFloat(1, h.toDouble()) // uResolution.y
+      ..setFloat(2, time) // uTime
+      ..setFloat(3, intensity); // uIntensity
+    shader
+      ..setFloat(4, touchPosition?.dx ?? -1.0)
+      ..setFloat(5, touchPosition?.dy ?? -1.0);
 
     final paint = ui.Paint()..shader = shader;
     canvas.drawRect(ui.Rect.fromLTWH(0, 0, w.toDouble(), h.toDouble()), paint);

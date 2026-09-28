@@ -36,6 +36,6 @@ flutter:
     - assets/images/
   
   shaders:
-    # 2-pass ultra realistic bubble rain pipeline
+    # Active single-pass rain shader and retained offscreen shader source.
     - shaders/rain_buffer_a.glsl
     - shaders/rain_composite.glsl
